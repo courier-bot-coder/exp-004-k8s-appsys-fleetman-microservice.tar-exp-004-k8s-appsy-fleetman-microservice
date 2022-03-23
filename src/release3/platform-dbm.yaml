@@ -1,0 +1,44 @@
+# Document Database Management Platform
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: mongodb
+  replicas: 1
+  template:
+    metadata:
+      namespace: default
+      labels:
+        app: mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: mongo:3.6.5-jessie
+          volumeMounts:
+            - name: mongo-persistent-storage
+              # Directory in the container to mount volume
+              mountPath: /data/db
+      # volume doc: https://kubernetes.io/docs/reference/kubernetes-api/config-and-storage-resources/volume/
+      volumes:
+        - name: mongo-persistent-storage
+          persistentVolumeClaim:
+            claimName: mongo-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fleetman-mongodb
+  namespace: default
+spec:
+  selector:
+    app: mongodb
+  ports:
+    - name: http
+      port: 27017
+      targetPort: 27017
+  type: ClusterIP

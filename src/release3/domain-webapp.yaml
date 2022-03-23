@@ -1,0 +1,38 @@
+# This YAML did not work with MetalLB because the fleetman-queue service had two ports - I am guessing that MetalLB did not know what to do with the 2nd port
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: webapp
+  replicas: 1
+  template:
+    metadata:
+      namespace: default
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - name: webapp
+        image: richardchesterwood/k8s-fleetman-webapp-angular:release2
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: production-microservice
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fleetman-webapp
+  namespace: default
+spec:
+  selector:
+    app: webapp
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  type: LoadBalancer

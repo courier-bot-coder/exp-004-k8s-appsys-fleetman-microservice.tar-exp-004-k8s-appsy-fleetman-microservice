@@ -1,0 +1,31 @@
+---
+# What do we want
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-pvc
+  namespace: default
+spec:
+  storageClassName:  mylocalstorage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+# How we want it
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-storage
+  namespace: default
+spec:
+  storageClassName: mylocalstorage
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  # hostPath doc: https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
+  hostPath:
+    path: "/mnt/k8s/exp-002-k8s-microservice-appsys-release3"
+    type: DirectoryOrCreate
